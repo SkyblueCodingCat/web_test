@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+	<head>
+		<title>
+			注册页面
+		</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="resources/JS/vue.js"></script>
+	<script src="resources/JS/axios.min.js"></script>
+	</head>
+	<body >
+		<h1 > 注册页面</h1>
+		<div id="app">
+		<form @submit.prevent="onSubmit"   method="post"  >
+		<br> 用户名：<input  type="text" @blur="checkUserName" v-model="userName" /><span >{{promptNameMess}}</span>
+		<br> 密码：<input  type="password"  v-model="passWord"/>
+		<br> 联系电话：<input  type="text" v-model="tell" />
+		<br><input type="submit"  value="提交"  />
+		<input type="reset"  value="重置"  name="reset" id="reset" />
+		<br><span>{{registerMess}}</span>
+		<!-- <span> 姓名：{{userInfo.userName}}</span>
+		<span> 密码：{{userInfo.passWord}}</span>
+		<span> 电话：{{userInfo.tell}}</span> -->
+		</form>
+		</div>
+		<script type="text/javascript">
+		var vm=new Vue({
+			el: '#app',
+        	data:{userName:"", passWord:"",tell:"",
+        		promptNameMess:"", registerMess:""
+        		//userInfo:{userName:"", passWord:"",tell:""}
+       },
+        	methods:{
+        		checkUserName:function(){
+        			self=this;
+        			axios("user/userNameCheck?name="+this.userName)
+        			.then(function(response){
+        				if(response.data=="ok"){
+        					self.promptNameMess="用户名可用";
+        				}
+        				else if(response.data=="err"){
+        					self.promptNameMess="用户名不合法或已被注册可用";
+        				}
+        				else self.promptNameMess="数据库异常";
+        				}).catch(function(error){alert("error");});
+        			},
+        	onSubmit:function(){
+        		var self=this;//回调函数中无法获得this.
+        		axios({url:"user/register",method:"post",
+			 		data:{userName:this.userName,passWord:this.passWord,tell:this.tell}}
+        		).then(function(response){
+			 			if(response.data=="ok")self.registerMess="注册成功";
+						else if(response.data=="err") self.registerMess="注册失败";
+						else self.registerMess="数据库异常";
+        		}).catch(function(error){});
+        		}
+        	}
+      });
+		
+		
+		</script>
+	</body>
+</html>
